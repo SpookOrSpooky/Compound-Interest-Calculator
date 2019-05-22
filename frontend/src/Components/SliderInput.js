@@ -1,39 +1,38 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import './SliderInput.css'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import "./SliderInput.css";
 
 export default class SliderInput extends Component {
-
 	constructor(props) {
-		super(props)
-
+		super(props);
 		this.state = {
-			value: props.defaultValue
-		}
+			sliderVal: this.props.value
+		};
+		this.handleChange = this.handleChange.bind(this);
 	}
 
 	handleChange(e) {
-		const value = e.target.value
-		this.setState({value})
+		this.setState({ sliderVal: e.target.value });
+		this.props.onInputChange(e.target.value);
 	}
 
 	render() {
-		const { value } = this.state
-
 		return (
 			<div className="fmz-slider">
-				<p>{value}%</p>
-				<input type="range"
-					value={value}
+				<p>{this.state.sliderVal}%</p>
+				<input
+					type="range"
+					value={this.state.sliderVal}
 					min={0}
 					max={10}
 					step={0.25}
-					onChange={this.handleChange.bind(this)}/>
+					onChange={this.handleChange}
+				/>
 			</div>
-		)
+		);
 	}
 }
 
 SliderInput.propTypes = {
-	defaultValue: PropTypes.number
-}
+	value: PropTypes.number
+};

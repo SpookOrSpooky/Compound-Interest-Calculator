@@ -1,70 +1,69 @@
-import React, { Component } from 'react'
-import PropTypes from 'prop-types'
-import { VictoryLine, VictoryChart } from 'victory'
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import CanvasJSReact from "../assets/canvasjs.react";
+var CanvasJSChart = CanvasJSReact.CanvasJSChart; //https://canvasjs.com/react-charts/stacked-area-chart/
 
 export default class DisplayGraph extends Component {
+	constructor(props) {
+		super(props);
+	}
 
 	render() {
-		const { data } = this.props;
+		//const { data } = this.props;
+		const { savT } = this.props.savT;
+		const { intT } = this.props.intT;
 
-		const baseProps = {
-  		width: 450,
-  		height: 300,
-  		padding: 50,
-  		colorScale: ["#48C8FF", "#00b2ff", "#038AD0", "#006C9B"]
-		};
+		//currently unused, gotta figure out how to set the proportions for the canvas.js stuff
+		//const baseProps = {
+		//    width: 450,
+		//    height: 300,
+		//    padding: 50,
+		//    colorScale: ["#48C8FF", "#00b2ff", "#038AD0", "#006C9B"]
+		//};
 
-		const baseLabelStyles = {
-  		fontFamily: "'Avenir Next', 'Avenir', 'Lato', 'Helvetica', 'Arial', 'Sans-Serif'",
-  		fontSize: 2,
-  		letterSpacing: 'normal',
-  		padding: 10,
-  		fill: "#00b2ff",
-  		stroke: "transparent"
-		};
-
-		const theme = {
-			area: {
-				style: {
-					labels: baseLabelStyles
-				}
+		const options = {
+			theme: "light2",
+			title: {
+				text: "Savings Calculated with Compound Interest"
 			},
-			axis: Object.assign({
-				style: {
-					axisLabel: baseLabelStyles,
-					grid: {
-						fill: "transparent",
-						stroke: "transparent"
-					},
-					ticks: {
-						fill: "transparent",
-						size: 0,
-						stroke: "transparent"
-					}
+			subtitles: [
+				{
+					text: "Total Savings and Total Interest accumulated over 50 years"
 				}
-			}, baseProps),
-			line: Object.assign({
-    		style: {
-      		data: {
-        		fill: "transparent",
-        		stroke: "#00b2ff",
-        		strokeWidth: 2
-      		},
-      		labels: baseLabelStyles
-    		}
-  		}, baseProps)
+			],
+			axisY: {
+				includeZero: true,
+				prefix: "£"
+			},
+			toolTip: {
+				shared: true
+			},
+			data: [
+				{
+					type: "area",
+					name: "Total Savings Value",
+					showInLegend: true,
+					xValueFormatString: "#",
+					yValueFormatString: "£#,##0.##",
+					dataPoints: savT
+				},
+				{
+					type: "area",
+					name: "Total Interest Accumulated",
+					showInLegend: true,
+					xValueFormatString: "#",
+					yValueFormatString: "£#,##0.##",
+					dataPoints: intT
+				}
+			]
 		};
 
 		return (
 			<div>
-				<VictoryChart animate={{duration: 100}} theme={theme}>
-					<VictoryLine {...{data}} y="amount"/>
-				</VictoryChart>
+				<CanvasJSChart options={options} />
 			</div>
 		);
 	}
 }
 
-DisplayGraph.propTypes = {
-	data: PropTypes.arrayOf(PropTypes.object)
-};
+

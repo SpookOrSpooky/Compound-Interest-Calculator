@@ -3,6 +3,8 @@ from interest_calculator.schema import schema
 from graphene.test import Client
 #from .initialize import initialize
 
+from django.test import RequestFactory
+
 pytestmark = pytest.mark.django_db
 
 
@@ -24,3 +26,10 @@ def test_mutation_create_savings(snapshot):
     }
     '''
         ))
+
+
+#def test_mutation_errors_create_savings():
+ #   mut = schema.CreateSavings()
+ #   req = RequestFactory().get('/')
+  #  res = mut.mutate(None, None, {})
+  #  assert res.formErrors(

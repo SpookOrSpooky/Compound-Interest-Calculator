@@ -12,7 +12,7 @@
 	display: inline-block;
 	font-size: 15px;
 	padding: 9px 15px;
-	border: 2px solid #AAB8C8;
+	border: 2px solid #aab8c8;
 	border-bottom-left-radius: 8px;
 	border-top-left-radius: 8px;
 	border-right: none;
@@ -22,7 +22,7 @@
 	padding: 9px;
 	font-size: 15px;
 	display: inline-block;
-	border: 2px solid #AAB8C8;
+	border: 2px solid #aab8c8;
 	border-bottom-right-radius: 8px;
 	border-top-right-radius: 8px;
 	text-align: center;
@@ -36,6 +36,6 @@
 	border: 2px solid #00b2ff;
 }
 
-.currency-input .default-value input {
+.currency-input .value input {
 	color: #00b2ff;
 }
