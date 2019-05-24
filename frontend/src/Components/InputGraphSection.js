@@ -31,112 +31,93 @@ const SAVINGS_MUTATION = gql`
     }
 `;
 
-export default class InputGraphSection extends Component {
+export default class InputGraphSectionContainer extends Component {
     constructor(props) {
         super(props);
-        this.handleInitialDepositChange = this.handleInitialDepositChange.bind(
-            this
+        this.state = {
+            savT: [{ x: 0, y: 0 }],
+            intT: [{ x: 0, y: 0 }]
+        };
+    }
+    handleComplete = ({ data: { createSavings } }) => {
+        this.setState(prevState => ({
+            savT: [
+                ...prevState.savT,
+                // month is inside the data returned by the API????
+                { x: createSavings.savings.months.id, y: createSavings.savings.months.totalValue }
+            ],
+            intT: [
+                ...prevState.intT,
+                { x: createSavings.savings.months.id, y: createSavings.savings.months.totalInterest }
+            ]
+        }));
+    };
+    render() {
+        const { savT, intT } = this.state;
+        return (
+            <Mutation mutation={SAVINGS_MUTATION} onCompleted={this.handleComplete}>
+                {savingsmutation => (
+                    <InputGraphSection mutate={savingsmutation} savT={savT} intT={intT} />
+                )}
+            </Mutation>
         );
-        this.handleMonthlyDepositChange = this.handleMonthlyDepositChange.bind(
-            this
-        );
-        this.handleInterestRateChange = this.handleInterestRateChange.bind(this);
-        this.handlePaymentFrequencyChange = this.handlePaymentFrequencyChange.bind(
-            this
-        );
-        this.handleChange = this.handleChange.bind(this);
+    }
+}
 
+class InputGraphSection extends Component {
+    constructor(props) {
+        super(props);
         this.state = {
             initialDeposit: "",
             monthlyDeposit: "",
             interestRate: 0,
-            paymentFrequency: "",
-            savT: [{ x: 0, y: 0 }],
-            intT: [{ x: 0, y: 0 }],
-            queryBool: false
+            paymentFrequency: ""
         };
     }
+    componentDidUpdate({ mutate }, prevState) {
+        console.log(this.state);
 
-    handleInitialDepositChange(value) {
-        //Validation occurs in child handler
-        this.setState({ initialDeposit: value });
-
-        //Now we jump to the final validator
-        this.handleChange();
-    }
-
-    handleMonthlyDepositChange(value) {
-        //Validation occurs in child handler
-        this.setState({ monthlyDeposit: value });
-        this.handleChange();
-    }
-
-    handleInterestRateChange(value) {
-        this.setState({ interestRate: value });
-        this.handleChange();
-    }
-
-    handlePaymentFrequencyChange(value) {
-        //No validation needed.
-        this.setState({ paymentFrequency: value });
-        this.handleChange();
-    }
-
-    handleMutationComplete(data) {
-        var sav = [];
-        var intr = [];
-
-        sav.map(month => sav.push({ x: month.id, y: month.totalValue }));
-        intr.map(month => intr.push({ x: month.id, y: month.totalInterest }));
-        this.setState({ savT: sav, intT: intr }); //Graph has been updated
-    }
-
-    handleChange() {
-        //DO: validate input. Might not care if any values are zero actually, but should double check to ensure values are non-null.
         if (
             this.state.initialDeposit !== "" &&
             this.state.monthlyDeposit !== "" &&
-            this.state.paymentFrequency !== ""
+            this.state.paymentFrequency !== "" &&
+            prevState !== this.state
         ) {
-            this.setState({queryBool: true})
+            //If currencyInput elements are returning strings, convert to ints here.
+            var paymentF = Number(this.state.paymentFrequency);
+            var initialD = parseFloat(this.state.initialDeposit);
+            var monthlyD = parseFloat(this.state.monthlyDeposit);
+            var interestR = parseFloat(this.state.interestRate)/100;
+
+            console.log("execute mutation");
+            mutate({
+                variables: {
+                    paymentFrequency: paymentF,
+                    initialDeposit: initialD,
+                    monthlyDeposit: monthlyD,
+                    interestRate: interestR
+                }
+            });
+            console.log("Mutation query commencing")
         } else {
             console.log("Input Requirements not met, will not generate graph.");
         }
     }
+    handleChange = evt => {
+        const { name, value } = evt.target;
+        this.setState({ [name]: value });
+    };
 
     render() {
-        const initialDeposit = this.state.initialDeposit;
-        const monthlyDeposit = this.state.monthlyDeposit;
-        const interestRate = this.state.interestRate;
-        const paymentFrequency = this.state.paymentFrequency;
-
-        const savT = this.state.savT; //Total savings array for graph
-        const intT = this.state.intT; //Total interest array for graph
-
-        const makeQuery = (() => {
-            if(this.state.queryBool === true){
-                var paymentF = Number(this.state.paymentFrequency);
-                var initialD = parseFloat(this.state.initialDeposit);
-                var monthlyD = parseFloat(this.state.monthlyDeposit);
-                var interestR = parseFloat(this.state.interestRate);
-                return  <Mutation
-                    mutation={SAVINGS_MUTATION}
-                    variables={{ paymentFrequency: paymentF, initialDeposit : initialD, monthlyDeposit : monthlyD, interestRate: interestR }}
-                    onCompleted={this.setState({queryBool: false})}
-                >
-                    {(savingsmutation, { data }) =>
-                        this.handleMutationComplete(data.savings.months)
-                    }
-                </Mutation>;
-            }
-
-        })();
-
-
-
+        const {
+            initialDeposit,
+            monthlyDeposit,
+            interestRate,
+            paymentFrequency
+        } = this.state;
+        const { savT, intT } = this.props;
         return (
             <div>
-                <makeQuery />
                 <p className="input-label">
                     Inputs must be positive and have no more than 15 digits with 2 decimal
                     places!
@@ -144,30 +125,31 @@ export default class InputGraphSection extends Component {
                 <div className="financial-inputs">
                     <p className="input-label">What is your initial Deposit?</p>
                     <CurrencyInput
+                        name="initialDeposit"
                         value={initialDeposit}
-                        onInputChange={this.handleInitialDepositChange}
+                        onInputChange={this.handleChange}
                     />
-
                     <p className="input-label">How much will you save each month?</p>
                     <CurrencyInput
+                        name="monthlyDeposit"
                         value={monthlyDeposit}
-                        onInputChange={this.handleMonthlyDepositChange}
+                        onInputChange={this.handleChange}
                     />
-
                     <p className="input-label">
                         What is the annual interest rate you have acquired?
                     </p>
                     <SliderInput
+                        name="interestRate"
                         value={Number(interestRate)}
-                        onInputChange={this.handleInterestRateChange}
+                        onInputChange={this.handleChange}
                     />
-
                     <p className="input-label">
                         Specify the frequency of interest compounding.
                     </p>
                     <FrequencyInput
+                        name="paymentFrequency"
                         value={paymentFrequency}
-                        onInputChange={this.handlePaymentFrequencyChange}
+                        onInputChange={this.handleChange}
                     />
                 </div>
                 <div className="financial-display">

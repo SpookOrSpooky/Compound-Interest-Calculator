@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 
+import { ApolloProvider, createBatchingNetworkInterface } from "react-apollo";
+import { ApolloClient } from "apollo-client";
 
-import InputGraphSection from "./Components/InputGraphSection";
+import InputGraphSectionContainer from "./Components/InputGraphSection";
 import "./App.css";
 
 class App extends Component {
@@ -28,7 +30,7 @@ class App extends Component {
 						Finimize Challenge - Compound Interest Calculator
 					</h1>
 				</header>
-				{loading ? "Loading..." : <InputGraphSection />}
+				{loading ? "Loading..." : <InputGraphSectionContainer />}
 			</div>
 			//</ApolloProvider>
 		);

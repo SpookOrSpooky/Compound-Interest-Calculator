@@ -10,8 +10,7 @@ export default class DisplayGraph extends Component {
 
 	render() {
 		//const { data } = this.props;
-		const { savT } = this.props.savT;
-		const { intT } = this.props.intT;
+		const { savT, intT } = this.props;
 
 		//currently unused, gotta figure out how to set the proportions for the canvas.js stuff
 		//const baseProps = {
@@ -66,4 +65,8 @@ export default class DisplayGraph extends Component {
 	}
 }
 
-
+DisplayGraph.propTypes = {
+	//data: PropTypes.arrayOf(PropTypes.object),
+	sav: PropTypes.arrayOf(PropTypes.object),
+	int: PropTypes.arrayOf(PropTypes.object)
+};

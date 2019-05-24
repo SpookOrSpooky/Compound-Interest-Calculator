@@ -13,7 +13,7 @@ export default class FrequencyInput extends Component {
     }
 
     handleChange(e) {
-        this.props.onInputChange(e.target.value);
+        this.props.onInputChange(e);
     }
 
     handleFocus(e) {
@@ -21,12 +21,14 @@ export default class FrequencyInput extends Component {
             hasFocus: true
         });
     }
+
     render() {
-        const { value } = this.props.value;
+        const { value, name } = this.props;
 
         return (
             <div className="frequency-input">
                 <select
+                    name={name}
                     value={value}
                     onChange={this.handleChange}
                     onFocus={this.handleFocus.bind(this)}
