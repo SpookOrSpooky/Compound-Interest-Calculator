@@ -13,7 +13,7 @@
 		"react-apollo": "^2.5.5",
 		"react-dom": "^16.2.0",
 		"react-props-noop": "^1.0.0",
-		"react-scripts": "1.1.0",
+		"react-scripts": "5.0.1",
 		"victory": "^0.21.0"
 	},
 	"scripts": {
